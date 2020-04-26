@@ -42,6 +42,19 @@ class FixerMixin:
         return change
     fieldMapping = {
         'changeid': 'changes.id',
+        'author': 'changes.author',
+        'committer': 'changes.committer',
+        'comments': 'changes.comments',
+        'branch': 'changes.branch',
+        'revision': 'changes.revision',
+        'revlink': 'changes.revlink',
+        'when_timestamp': 'changes.when_timestamp',
+        'category': 'changes.category',
+        'repository': 'changes.repository',
+        'codebase': 'changes.codebase',
+        'project': 'changes.project',
+        'sourcestampid': 'changes.sourcestampid',
+        'parent_changeids': 'changes.parent_changeids',
     }
 
 

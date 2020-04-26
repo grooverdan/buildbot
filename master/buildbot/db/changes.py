@@ -249,7 +249,7 @@ class ChangesConnectorComponent(base.DBConnectorComponent):
         def thd(conn):
             # get the changeids from the 'changes' table
             changes_tbl = self.db.model.changes
-            q = sa.select([changes_tbl.c.changeid])
+            q = changes_tbl.select()
 
             if resultSpec is not None:
                 return reversed(resultSpec.thd_execute(conn, q, self._getDataFromRow))
