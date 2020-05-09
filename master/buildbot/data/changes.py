@@ -38,10 +38,11 @@ class FixerMixin:
 
             sskey = ('sourcestamps', str(change['sourcestampid']))
             change['sourcestamp'] = yield self.master.data.get(sskey)
+            change['builds'] = yield self.master.db.builds.getBuildsForChange(change['changeid'])
             del change['sourcestampid']
         return change
     fieldMapping = {
-        'changeid': 'changes.id',
+        'changeid': 'changes.changeid',
         'author': 'changes.author',
         'committer': 'changes.committer',
         'comments': 'changes.comments',
@@ -93,11 +94,16 @@ class ChangesEndpoint(FixerMixin, base.Endpoint):
                 changes = [change]
             else:
                 changes = []
-        else:
+        else: 
             if resultSpec is not None:
-                resultSpec.fieldMapping = self.fieldMapping
-                changes = yield self.master.db.changes.getChanges(resultSpec=resultSpec)
+                branch = resultSpec.popStringFilter('branch')
+                if branch is not None:
+                    changes = yield self.master.db.changes.getChangesForBranch(branch, resultSpec.order, resultSpec.limit)
+                else:
+                    resultSpec.fieldMapping = self.fieldMapping
+                    changes = yield self.master.db.changes.getChanges(resultSpec=resultSpec)
         results = []
+        print("CHANGES", changes)
         for ch in changes:
             results.append((yield self._fixChange(ch)))
         return results
