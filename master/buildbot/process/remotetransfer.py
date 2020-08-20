@@ -40,7 +40,7 @@ class FileWriter(base.FileWriterImpl):
         destfile = os.path.abspath(destfile)
         dirname = os.path.dirname(destfile)
         if not os.path.exists(dirname):
-            os.makedirs(dirname)
+            os.makedirs(dirname, mode=mode)
 
         self.destfile = destfile
         self.mode = mode

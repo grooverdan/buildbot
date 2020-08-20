@@ -103,7 +103,6 @@ class ChangesEndpoint(FixerMixin, base.Endpoint):
                     resultSpec.fieldMapping = self.fieldMapping
                     changes = yield self.master.db.changes.getChanges(resultSpec=resultSpec)
         results = []
-        print("CHANGES", changes)
         for ch in changes:
             results.append((yield self._fixChange(ch)))
         return results
