@@ -38,7 +38,16 @@ class FixerMixin:
 
             sskey = ('sourcestamps', str(change['sourcestampid']))
             change['sourcestamp'] = yield self.master.data.get(sskey)
-            change['builds'] = yield self.master.db.builds.getBuildsForChange(change['changeid'])
+            change['builds'] = yield self.master.db.builds.getBuildsForChange(change['changeid'], failedTests=True)
+
+            '''
+            change['builds'] = []
+            for b in builds:
+                buildername = yield self.master.db.builders.getBuilder(b['builderid'])
+                b['buildername'] = buildername['name']
+                b['failed_tests'] = yield self.master.db.builds.getTestsForBuild(b['number'], b['buildername'])
+                change['builds'].append(b)
+            I'''
             del change['sourcestampid']
         return change
     fieldMapping = {
