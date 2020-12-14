@@ -88,9 +88,9 @@ class MtrLogObserver(LogLineObserver):
     overridden in a subclass to do further processing on the information."""
 
     _line_re = re.compile(
-        r"^([-._0-9a-zA-z]+)( '[-_ a-zA-Z]+')?\s+(w[0-9]+\s+)?\[ (fail|pass) \]\s*(.*)$")
+        r"^([-._0-9a-zA-z]+)( '[-_ ,a-zA-Z]+')?\s+(w[0-9]+\s+)?\[ (fail|pass) \]\s*(.*)$")
     _line_re2 = re.compile(
-        r"^[-._0-9a-zA-z]+( '[-_ a-zA-Z]+')?\s+(w[0-9]+\s+)?\[ [-a-z]+ \]")
+        r"^[-._0-9a-zA-z]+( '[-_ ,a-zA-Z]+')?\s+(w[0-9]+\s+)?\[ [-a-z]+ \]")
     _line_re3 = re.compile(
         r"^\*\*\*Warnings generated in error logs during shutdown after running tests: (.*)")
     _line_re4 = re.compile(r"^The servers were restarted [0-9]+ times$")
