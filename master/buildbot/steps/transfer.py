@@ -189,7 +189,7 @@ class DirectoryUpload(_TransferBuildStep):
     renderables = ['workersrc', 'masterdest', 'url']
 
     def __init__(self, workersrc=None, masterdest=None,
-                 workdir=None, maxsize=None, blocksize=16 * 1024,
+                 workdir=None, maxsize=None, blocksize=256 * 1024,
                  compress=None, url=None, urlText=None,
                  **buildstep_kwargs
                  ):
@@ -235,7 +235,7 @@ class DirectoryUpload(_TransferBuildStep):
 
         # we use maxsize to limit the amount of data on both sides
         dirWriter = remotetransfer.DirectoryWriter(
-            masterdest, self.maxsize, self.compress, 0o600)
+            masterdest, self.maxsize, self.compress, 0o655)
 
         # default arguments
         args = {
