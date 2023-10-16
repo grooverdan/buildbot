@@ -424,7 +424,7 @@ class MTR(Test):
 CREATE TABLE IF NOT EXISTS test_run(
     id INT PRIMARY KEY AUTO_INCREMENT,
     branch VARCHAR(100),
-    revision VARCHAR(32) NOT NULL,
+    revision VARCHAR(256) NOT NULL,
     platform VARCHAR(100) NOT NULL,
     dt TIMESTAMP NOT NULL,
     bbnum INT NOT NULL,
