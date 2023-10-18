@@ -235,7 +235,7 @@ class Model(base.DBConnectorComponent):
         sa.Column('id', sa.Integer, primary_key=True),
 
         sa.Column('branch', sa.String(100)),
-        sa.Column('revision', sa.String(32), nullable=False),
+        sa.Column('revision', sa.String(256), nullable=False),
         sa.Column('platform', sa.String(100), nullable=False),
         sa.Column('dt', sa.TIMESTAMP, nullable=False),
         sa.Column('bbnum', sa.Integer, nullable=False),
