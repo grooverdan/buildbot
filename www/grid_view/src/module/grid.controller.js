@@ -38,10 +38,10 @@ class Grid {
         this.data = dataService.open().closeOnDestroy(this.$scope);
 
         this.branch = this.$stateParams.branch;
-	console.log(this.branch)
 	if (typeof this.branch == 'undefined') {
 	   this.branch = 'all';
 	}
+    this.all_tags = ["protected", "autobake", "install", "upgrade"]
 	this.tags = this.$stateParams.tag != null ? this.$stateParams.tag : [];
         if (!angular.isArray(this.tags)) {
             this.tags = [this.tags];
@@ -100,7 +100,6 @@ class Grid {
         if (!this.dataReady()) {
             return;
         }
-	console.log('On CHANGE');
         let changes = {};
         const branches = {};
 
@@ -110,7 +109,7 @@ class Grid {
 	    }
             changes[c.changeid] = c;
 	    branches[c.branch] = true;
-        } 
+        }
 
 	// only keep the @revisionLimit most recent changes for display
 	changes = ((() => {
@@ -158,7 +157,7 @@ class Grid {
                             	if (parseInt(build.results) !== parseInt(this.result)) {
                                 	continue;
                         	}
-                    	}	
+                    	}
 			buildersById[builder.builderid] = builder;
 			if (!(c.changeid in builder.builds)) {
 				builder.builds[c.changeid] = []
@@ -198,6 +197,9 @@ class Grid {
     resetTags() {
         this.tags = [];
         return this.refresh();
+    }
+    isTagToggled(tag) {
+        return this.tags.indexOf(tag) >= 0;
     }
 
     refresh() {
