@@ -328,7 +328,8 @@ class Git(Source, GitStepMixin):
                     command.append('--progress')
                 else:
                     print("Git versions < 1.7.2 don't support progress")
-
+                if self.shallow:
+                    command += ['--depth', str(int(self.shallow))]
             yield self._dovccmd(command)
 
         if self.revision:
