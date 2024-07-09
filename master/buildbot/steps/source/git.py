@@ -318,7 +318,7 @@ class Git(Source, GitStepMixin):
                 fetch_required = False
 
         if fetch_required:
-            command = ['fetch', '-t', self.repourl, self.branch]
+            command = ['fetch', self.repourl, self.branch]
             # If the 'progress' option is set, tell git fetch to output
             # progress information to the log. This can solve issues with
             # long fetches killed due to lack of output, but only works
