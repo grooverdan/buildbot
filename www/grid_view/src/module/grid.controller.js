@@ -41,7 +41,7 @@ class Grid {
 	if (typeof this.branch == 'undefined') {
 	   this.branch = 'all';
 	}
-    this.all_tags = ["protected", "autobake", "install", "upgrade"]
+    this.all_tags = ["protected", "autobake", "install", "upgrade", "main"]
 	this.tags = this.$stateParams.tag != null ? this.$stateParams.tag : [];
         if (!angular.isArray(this.tags)) {
             this.tags = [this.tags];
@@ -213,12 +213,23 @@ class Grid {
     }
 
     isBuilderDisplayed(builder) {
+        // Check if the "main" tag is selected
+        const hasMainTag = this.tags.indexOf('main') >= 0;
+    
+        // Special case: If the "main" tag is selected, exclude builders with the "experimental" tag
+        if (hasMainTag && builder.tags.indexOf('experimental') >= 0) {
+            return false;
+        }
+    
+        // For other tags, ensure all selected tags are present in the builder's tags
         for (let tag of Array.from(this.tags)) {
-            if (builder.tags.indexOf(tag) < 0) {
-                return false;
+            // Skip the "main" tag check as it's handled separately
+            if (tag !== 'main' && builder.tags.indexOf(tag) < 0) {
+                return false; // Exclude the builder if it does not have a selected tag
             }
         }
-        return true;
+    
+        return true; // Include the builder if it has all selected tags and special conditions are met
     }
 
     isTagToggled(tag) {
