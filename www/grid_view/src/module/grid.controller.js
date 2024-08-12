@@ -41,7 +41,7 @@ class Grid {
 	if (typeof this.branch == 'undefined') {
 	   this.branch = 'all';
 	}
-    this.all_tags = ["protected", "autobake", "install", "upgrade", "main"]
+    this.all_tags = ["protected", "autobake", "install", "upgrade", "main", "experimental"]
 	this.tags = this.$stateParams.tag != null ? this.$stateParams.tag : [];
         if (!angular.isArray(this.tags)) {
             this.tags = [this.tags];
