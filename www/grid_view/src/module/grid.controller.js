@@ -217,7 +217,7 @@ class Grid {
         const hasMainTag = this.tags.indexOf('main') >= 0;
     
         // Special case: If the "main" tag is selected, exclude builders with the "experimental" tag
-        if (hasMainTag && builder.tags.indexOf('experimental') >= 0) {
+        if (hasMainTag && (builder.tags.indexOf('experimental') >= 0 || builder.tags.indexOf('bleeding-edge') >= 0)) {
             return false;
         }
     
