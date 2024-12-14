@@ -160,7 +160,7 @@ class Git(Source, GitStepMixin):
             return
         elif action == "clone":
             log.msg("No git repo present, making full clone")
-            yield self._fullCloneOrFallback(self.shallow)
+            yield self._fullCloneOrFallback()
         elif self.method == 'clean':
             yield self.clean()
         elif self.method == 'fresh':
@@ -177,7 +177,7 @@ class Git(Source, GitStepMixin):
             return
         elif action == "clone":
             log.msg("No git repo present, making full clone")
-            yield self._fullCloneOrFallback(shallowClone=self.shallow)
+            yield self._fullCloneOrFallback()
             return
 
         yield self._fetchOrFallback()
@@ -227,7 +227,7 @@ class Git(Source, GitStepMixin):
             yield self._fetchOrFallback()
         else:
             yield self._doClobber()
-            yield self._fullCloneOrFallback(shallowClone=self.shallow)
+            yield self._fullCloneOrFallback()
         yield self._syncSubmodule()
         yield self._updateSubmodule()
         yield self._cleanSubmodule()
@@ -307,23 +307,18 @@ class Git(Source, GitStepMixin):
         return self.workdir
 
     @defer.inlineCallbacks
-    def _fetch(self, _, shallowClone, abandonOnFailure=True):
+    def _fetch(self, _):
         fetch_required = True
 
         # If the revision already exists in the repo, we don't need to fetch.
         if self.revision:
             rc = yield self._dovccmd(['cat-file', '-e', self.revision],
-                                     abandonOnFailure=abandonOnFailure)
+                                     abandonOnFailure=False)
             if rc == RC_SUCCESS:
                 fetch_required = False
 
         if fetch_required:
-            command = ['fetch', '-f']
-            if shallowClone:
-                command += ['--depth', str(int(shallowClone))]
-            if self.tags:
-                command.append("--tags")
-
+            command = ['fetch', self.repourl, self.branch]
             # If the 'progress' option is set, tell git fetch to output
             # progress information to the log. This can solve issues with
             # long fetches killed due to lack of output, but only works
@@ -335,14 +330,14 @@ class Git(Source, GitStepMixin):
                     print("Git versions < 1.7.2 don't support progress")
                 if self.shallow:
                     command += ['--depth', str(int(self.shallow))]
-            command += [ self.repourl, self.branch]
             yield self._dovccmd(command)
 
         if self.revision:
             rev = self.revision
         else:
             rev = 'FETCH_HEAD'
-        command = ['checkout', '-f', rev]
+        command = ['reset', '--hard', rev, '--']
+        abandonOnFailure = not self.retryFetch and not self.clobberOnFailure
         res = yield self._dovccmd(command, abandonOnFailure)
 
         # Rename the branch if needed.
@@ -358,13 +353,11 @@ class Git(Source, GitStepMixin):
         Handles fallbacks for failure of fetch,
         wrapper for self._fetch
         """
-        abandonOnFailure = not self.retryFetch and not self.clobberOnFailure
-
-        res = yield self._fetch(None, shallowClone=self.shallow, abandonOnFailure=abandonOnFailure)
+        res = yield self._fetch(None)
         if res == RC_SUCCESS:
             return res
         elif self.retryFetch:
-            yield self._fetch(None, shallowClone=self.shallow)
+            yield self._fetch(None)
         elif self.clobberOnFailure:
             yield self.clobber()
         else:
@@ -406,7 +399,7 @@ class Git(Source, GitStepMixin):
         res = yield self._dovccmd(command, abandonOnFailure=(abandonOnFailure and shallowClone))
 
         if switchToBranch:
-            res = yield self._fetch(None, shallowClone=shallowClone)
+            res = yield self._fetch(None)
 
         done = self.stopped or res == RC_SUCCESS  # or shallow clone??
         if self.retry and not done:
@@ -448,12 +441,12 @@ class Git(Source, GitStepMixin):
         return res
 
     @defer.inlineCallbacks
-    def _fullCloneOrFallback(self, shallowClone):
+    def _fullCloneOrFallback(self):
         """Wrapper for _fullClone(). In the case of failure, if clobberOnFailure
            is set to True remove the build directory and try a full clone again.
         """
 
-        res = yield self._fullClone(shallowClone)
+        res = yield self._fullClone()
         if res != RC_SUCCESS:
             if not self.clobberOnFailure:
                 raise buildstep.BuildStepFailed()
