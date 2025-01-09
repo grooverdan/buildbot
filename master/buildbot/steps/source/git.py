@@ -321,8 +321,6 @@ class Git(Source, GitStepMixin):
             command = ['fetch', '-f']
             if shallowClone:
                 command += ['--depth', str(int(shallowClone))]
-            if self.tags:
-                command.append("--tags")
 
             # If the 'progress' option is set, tell git fetch to output
             # progress information to the log. This can solve issues with
